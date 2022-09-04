@@ -1,6 +1,6 @@
 //주소관리 시스템
 //주소(address), 소유주 이름(owner name), 사람 인원(number of people), 건물 이름(building name), 건축 날짜(date of construction)
-// 1 : 생성. 2 : 조희. 3 : 수정. 4 : 삭제
+// 1 : 생성. 2 : 조회. 3 : 수정. 4 : 삭제
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
@@ -17,26 +17,35 @@ typedef struct AddressManegementSystem {
 
 struct Node {
     struct Node *next;
-    struct AddressManegementSystem AMS;
+    struct AddressManegementSystem ams;
 };
 
-void InsertData(struct Node *target, struct AddressManegementSystem AMS) {
+void InsertData(struct Node *target, AMS ams) {
     struct Node *new = malloc(sizeof(struct Node));
-    new->AMS.key = AMS.key;
-    new->AMS.NumberOfPeople = AMS.NumberOfPeople;
-    new->AMS.DateOfConstruction = AMS.DateOfConstruction;
-    strcpy(new->AMS.address, AMS.address);
-    strcpy(new->AMS.OwnerName, AMS.OwnerName);
-    strcpy(new->AMS.BuildingName, AMS.BuildingName);
+    new->ams.key = ams.key;
+    new->ams.NumberOfPeople = ams.NumberOfPeople;
+    new->ams.DateOfConstruction = ams.DateOfConstruction;
+    strcpy(new->ams.address, ams.address);
+    strcpy(new->ams.OwnerName, ams.OwnerName);
+    strcpy(new->ams.BuildingName, ams.BuildingName);
     new->next = target->next;
     target->next = new;
+}
+
+AMS * RetrieveData(struct Node *head, int key) {
+    struct Node *current = head;
+    while (current->next != NULL) {
+        if (current->ams.key == key) {
+            return &current->ams;
+        }
+    }
 }
 
 void DeleteData(struct Node *head, int key) {
     struct Node *temp = NULL;
     struct Node *current = head;
     while (current->next != NULL) {
-        if (current->next->AMS.key == key) {
+        if (current->next->ams.key == key) {
             temp = current->next;
             current->next = current->next->next;
             free(temp);
@@ -68,8 +77,11 @@ int main(void) {
 //    printf("번호 입력 : ");
 //    scanf("%d", &navigation);
     
-    struct AddressManegementSystem * testData1 = malloc(sizeof(struct AddressManegementSystem));
-    struct AddressManegementSystem * testData2 = malloc(sizeof(struct AddressManegementSystem));
+    AMS * testData1 = malloc(sizeof(AMS));
+    AMS * testData2 = malloc(sizeof(AMS));
+    
+    AMS * retrievedData = NULL;
+    
     testData1->key = 1;
     strcpy(testData1->address, "asdf");
     strcpy(testData1->OwnerName, "유동호");
@@ -82,11 +94,11 @@ int main(void) {
     InsertData(head, *testData1);
     InsertData(head->next, *testData2);
     
-    printf("%s", head->next->AMS.address);
-    printf("%s", head->next->AMS.OwnerName);
+    printf("%s", head->next->ams.address);
+    printf("%s", head->next->ams.OwnerName);
     
-    DeleteData(head, 1);
+    retrivedData = RetrieveData(head, 1);
     
-    printf("%s", head->next->AMS.address);
-    printf("%s", head->next->AMS.OwnerName);
+    printf("%s", retrivedData->address);
+    printf("%s", retrivedData->OwnerName);
 }
